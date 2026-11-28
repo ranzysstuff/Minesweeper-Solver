@@ -8,18 +8,20 @@ private int startingY = 0;
 private int mineAmount;
 void main() {
     String input="";
+    IO.println("Welcome to the minesweeperSolver!\ntype 'help' for a list of commands");
     while (!input.equals("quit")) {
         input = IO.readln();
 
         //help
         if(input.equals("help"))
-            IO.println("place -> do this first to generate mines \n" +
+            IO.println("generate -> do this first to make a board \n" +
+                    "place -> open the manual mine placer menu \n" +
                     "board -> print the full board\n" +
                     "solve -> attempt to solve current board\n" +
                     "quit -> exit program");
 
         //place mines
-        else if(input.equals("place")){
+        else if(input.equals("generate")){
             IO.print("width: ");
             int width = Integer.parseInt(IO.readln());
             IO.print("height: ");
@@ -54,7 +56,29 @@ void main() {
 
         //attempt to solve current board
         else if(input.equals("solve")) {
-            solve(mines, nums, startingX, startingY, mineAmount);
+            solve(mines, startingX, startingY, mineAmount);
+        }
+
+        //manual mine placer
+        else if(input.equals("place")) {
+            while(!input.equals("quit")) {
+                try {
+                    IO.println("type x value of mine or type 'quit' to return to menu");
+                    input = IO.readln();
+                    if (input.equals("quit")) {
+                        break;
+                    }
+                    int x = Integer.parseInt(input);
+                    IO.println("type y value");
+                    input = IO.readln();
+                    int y = Integer.parseInt(input);
+                    if(!mines[x][y]) mineAmount++;
+                    mines[x][y] = true;
+                } catch (Exception e) {
+                    IO.println("not valid");
+                }
+            }
+            input = "";
         }
 
         //quit. doesnt need to do anything, loop closes itself
@@ -116,7 +140,8 @@ int[][] getNums(boolean[][] mines) {
     }
         return runningNums;
 }
-void solve(boolean[][] mines, int[][] nums, int startingX, int startingY, int mineAmount) {
+void solve(boolean[][] mines, int startingX, int startingY, int mineAmount) {
+    int[][] nums = getNums(mines);
     boolean[][] uncovered = new boolean[mines.length][mines[0].length];
     int tilesUncovered = 0;
     boolean[][] flags = new boolean[mines.length][mines[0].length];
